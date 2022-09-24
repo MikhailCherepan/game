@@ -95,29 +95,11 @@ public class PlayerController {
 
     @PostMapping(value = "/rest/players")
     public Player createPlayer(@RequestBody PlayerRequstBody playerRequstBody) {
-        return playerServiceImp.createPlayer(
-                playerRequstBody.getName(),
-                playerRequstBody.getTitle(),
-                playerRequstBody.getRace(),
-                playerRequstBody.getProfession(),
-                playerRequstBody.getBirthday(),
-                playerRequstBody.getBanned(),
-                playerRequstBody.getExperience()
-        );
-    }
+        return playerServiceImp.createPlayer(playerRequstBody); }
 
     @PostMapping(value = "/rest/players/{id}")
     public Player updatePlayer(@PathVariable Long id, @RequestBody PlayerRequstBody playerRequstBody) {
-        return playerServiceImp.updatePlayer(
-                id,
-                playerRequstBody.getName(),
-                playerRequstBody.getTitle(),
-                playerRequstBody.getRace(),
-                playerRequstBody.getProfession(),
-                playerRequstBody.getBirthday(),
-                playerRequstBody.getBanned(),
-                playerRequstBody.getExperience()
-        );
+        return playerServiceImp.updatePlayer(id, playerRequstBody);
     }
 
 

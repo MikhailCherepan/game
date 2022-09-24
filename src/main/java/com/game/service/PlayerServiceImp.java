@@ -1,9 +1,8 @@
 package com.game.service;
 
-//import com.game.controller.BadRequestException;
-//import com.game.controller.NotFoundException;
 import com.game.controller.PlayerOrder;
 import com.game.controller.PageRequst;
+import com.game.controller.PlayerRequstBody;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
@@ -189,26 +188,27 @@ public class PlayerServiceImp implements PlayerService{
         return player.getTitle().toUpperCase().contains(title.toUpperCase());
     }
 @Override
-    public Player createPlayer(String name, String title, Race race, Profession profession, Long birthday, Boolean banned, Integer experience) {
-        if (isNameInvalid(name)) throw new BadRequestException();
-        if (isTitleInvalid(title)) throw new BadRequestException();
-        if (race == null) throw new BadRequestException();
-        if (profession == null) throw new BadRequestException();
-        if (birthday == null || getYear(birthday) < 2000 || getYear(birthday) > 3000) throw new BadRequestException();
-        if (experience == null || experience > 10000000 || experience < 0) throw new BadRequestException();
-        if (banned == null) banned = false;
+    public Player createPlayer(PlayerRequstBody playerRequstBody) {
 
-        int level = (int) ((Math.sqrt(2500 + 200 * experience) - 50) / (100));
-        int untilNextLevel = 50 * (level + 1) * (level + 2) - experience;
+    if (isNameInvalid(playerRequstBody.getName())) throw new BadRequestException();
+        if (isTitleInvalid(playerRequstBody.getTitle())) throw new BadRequestException();
+        if (playerRequstBody.getRace() == null) throw new BadRequestException();
+        if (playerRequstBody.getProfession() == null) throw new BadRequestException();
+        if (playerRequstBody.getBirthday() == null || getYear(playerRequstBody.getBirthday() ) < 2000 || getYear(playerRequstBody.getBirthday() ) > 3000) throw new BadRequestException();
+        if (playerRequstBody.getExperience() == null || playerRequstBody.getExperience() > 10000000 || playerRequstBody.getExperience() < 0) throw new BadRequestException();
+        if (playerRequstBody.getBanned() == null)  playerRequstBody.setBanned(false);
+
+        int level = (int) ((Math.sqrt(2500 + 200 * playerRequstBody.getExperience()) - 50) / (100));
+        int untilNextLevel = 50 * (level + 1) * (level + 2) - playerRequstBody.getExperience();
 
         Player player = new Player();
-        player.setName(name);
-        player.setTitle(title);
-        player.setRace(race);
-        player.setProfession(profession);
-        player.setBirthday(new Date(birthday));
-        player.setExperience(experience);
-        player.setBanned(banned);
+        player.setName(playerRequstBody.getName());
+        player.setTitle(playerRequstBody.getTitle());
+        player.setRace(playerRequstBody.getRace());
+        player.setProfession(playerRequstBody.getProfession());
+        player.setBirthday(new Date(playerRequstBody.getBirthday()));
+        player.setExperience(playerRequstBody.getExperience());
+        player.setBanned(playerRequstBody.getBanned());
         player.setLevel(level);
         player.setUntilNextLevel(untilNextLevel);
 
@@ -234,30 +234,30 @@ public class PlayerServiceImp implements PlayerService{
 
     }
 @Override
-    public Player updatePlayer(Long id, String name, String title, Race race, Profession profession, Long birthday, Boolean banned, Integer experience) {
+    public Player updatePlayer(Long id, PlayerRequstBody playerRequstBody) {
         checkValidId(id);
         Player player = repository.findById(id).orElseThrow((IllegalStateException::new));
 
 
-        if (name != null) player.setName(name);
-        if (title != null) player.setTitle(title);
-        if (race != null) player.setRace(race);
-        if (profession != null) player.setProfession(profession);
-        if (birthday != null) {
-            if (getYear(birthday) < 2000 || getYear(birthday) > 3000) throw new BadRequestException();
-            player.setBirthday(new Date(birthday));
+        if (playerRequstBody.getName() != null) player.setName(playerRequstBody.getName());
+        if (playerRequstBody.getTitle() != null) player.setTitle(playerRequstBody.getTitle());
+        if (playerRequstBody.getRace() != null) player.setRace(playerRequstBody.getRace());
+        if (playerRequstBody.getProfession() != null) player.setProfession(playerRequstBody.getProfession());
+        if (playerRequstBody.getBirthday() != null) {
+            if (getYear(playerRequstBody.getBirthday()) < 2000 || getYear(playerRequstBody.getBirthday()) > 3000) throw new BadRequestException();
+            player.setBirthday(new Date(playerRequstBody.getBirthday()));
         }
-        if (experience != null) {
-            if (experience > 10000000 || experience < 0) throw new BadRequestException();
-            player.setExperience(experience);
+        if (playerRequstBody.getExperience() != null) {
+            if (playerRequstBody.getExperience() > 10000000 || playerRequstBody.getExperience() < 0) throw new BadRequestException();
+            player.setExperience(playerRequstBody.getExperience());
 
-            int level = (int) ((Math.sqrt(2500 + 200 * experience) - 50) / (100));
-            int untilNextLevel = 50 * (level + 1) * (level + 2) - experience;
+            int level = (int) ((Math.sqrt(2500 + 200 * playerRequstBody.getExperience()) - 50) / (100));
+            int untilNextLevel = 50 * (level + 1) * (level + 2) - playerRequstBody.getExperience();
 
             player.setUntilNextLevel(untilNextLevel);
             player.setLevel(level);
         }
-        if (banned != null) player.setBanned(banned);
+        if (playerRequstBody.getBanned() != null) player.setBanned(playerRequstBody.getBanned());
 
 
         return repository.save(player);
