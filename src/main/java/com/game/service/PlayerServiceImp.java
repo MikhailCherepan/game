@@ -1,15 +1,12 @@
 package com.game.service;
 
 import com.game.controller.PlayerOrder;
-import com.game.controller.PageRequst;
-import com.game.controller.PlayerRequstBody;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -84,10 +81,12 @@ public class PlayerServiceImp implements PlayerService{
     }
 
     private List<Player> getPage(List<Player> all, Integer pageNumber, Integer pageSize) {
-        pageNumber = pageNumber == null ? 0 : pageNumber;
-        pageSize = pageSize == null ? 3 : pageSize;
+        if (pageNumber != null) {pageNumber = pageNumber;} else pageNumber = 0;
+        if (pageSize != null) {pageSize = pageSize;} else pageSize = 3;
 
-        int start = pageNumber * pageSize <= all.size() ? pageSize * pageNumber : all.size() - pageSize;
+        int start = pageNumber * pageSize;
+
+        if (start> all.size()){start = all.size() - pageSize;}
         int end = Math.min((pageSize * pageNumber + pageSize), all.size());
         start = Math.min(start, end);
         all = all.subList(start, end);
@@ -128,39 +127,51 @@ public class PlayerServiceImp implements PlayerService{
 @Override
     public List<Player> getPlayers(String name, String title, Race race, Profession profession, Long after, Long before, Boolean banned, Integer minExperience, Integer maxExperience, Integer minLevel, Integer maxLevel) {
         List<Player> all = repository.findAll();
-        if (name != null) {
+
+    if (title != null) {
+        all = all.stream().filter(player -> hasTitle(player, title)).collect(Collectors.toList());
+    }
+
+    if (name != null) {
             all = all.stream().filter(player -> hasName(player, name)).collect(Collectors.toList());
         }
-        if (title != null) {
-            all = all.stream().filter(player -> hasTitle(player, title)).collect(Collectors.toList());
-        }
+
+    if (profession != null) {
+        all = all.stream().filter(player -> hasProfession(player, profession)).collect(Collectors.toList());
+    }
         if (race != null) {
             all = all.stream().filter(player -> hasRace(player, race)).collect(Collectors.toList());
         }
-        if (profession != null) {
-            all = all.stream().filter(player -> hasProfession(player, profession)).collect(Collectors.toList());
-        }
+
+    if (maxExperience != null) {
+        all = all.stream().filter(player -> isExperienceLessThan(player, maxExperience)).collect(Collectors.toList());
+    }
+
         if (minExperience != null) {
             all = all.stream().filter(player -> isExperienceGreaterThan(player, minExperience)).collect(Collectors.toList());
         }
-        if (maxExperience != null) {
-            all = all.stream().filter(player -> isExperienceLessThan(player, maxExperience)).collect(Collectors.toList());
-        }
+
+
+    if (banned != null) {
+        all = all.stream().filter(player -> isBanned(player, banned)).collect(Collectors.toList());
+    }
+
+    if (maxLevel != null) {
+        all = all.stream().filter(player -> isLevelLessThan(player, maxLevel)).collect(Collectors.toList());
+    }
         if (minLevel != null) {
             all = all.stream().filter(player -> isLevelGreaterThan(player, minLevel)).collect(Collectors.toList());
         }
-        if (maxLevel != null) {
-            all = all.stream().filter(player -> isLevelLessThan(player, maxLevel)).collect(Collectors.toList());
-        }
-        if (banned != null) {
-            all = all.stream().filter(player -> isBanned(player, banned)).collect(Collectors.toList());
-        }
+
+
+
+    if (before != null) {
+        all = all.stream().filter(player -> BirthdayBefore(player, before)).collect(Collectors.toList());
+    }
         if (after != null) {
             all = all.stream().filter(player -> BirthdayAfter(player, after)).collect(Collectors.toList());
         }
-        if (before != null) {
-            all = all.stream().filter(player -> BirthdayBefore(player, before)).collect(Collectors.toList());
-        }
+
         return all;
     }
 

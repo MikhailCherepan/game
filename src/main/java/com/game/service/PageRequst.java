@@ -1,5 +1,6 @@
-package com.game.controller;
+package com.game.service;
 
+import com.game.controller.PlayerOrder;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 

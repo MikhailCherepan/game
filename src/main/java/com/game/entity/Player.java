@@ -11,7 +11,7 @@ public class Player {
     private String title;
     private Race race;
     private Profession profession;
-    private Date birthday;
+    private Long birthday;
     private Boolean banned;
     private Integer experience;
     private Integer level;
@@ -25,7 +25,7 @@ public class Player {
         this.title = title;
         this.race = race;
         this.profession = profession;
-        this.birthday = birthday;
+        this.birthday = birthday.getTime();
         this.banned = banned;
         this.experience = experience;
         this.level = level;
@@ -78,11 +78,11 @@ public class Player {
     }
 
     public Date getBirthday() {
-        return birthday;
+        return new Date(birthday);
     }
 
     public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+        this.birthday = birthday.getTime();
     }
 
     public Boolean getBanned() {

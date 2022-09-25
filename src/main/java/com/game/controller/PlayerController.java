@@ -3,6 +3,8 @@ package com.game.controller;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
+import com.game.service.PageRequst;
+import com.game.service.PlayerRequstBody;
 import com.game.service.PlayerServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -101,6 +103,7 @@ public class PlayerController {
     public Player updatePlayer(@PathVariable Long id, @RequestBody PlayerRequstBody playerRequstBody) {
         return playerServiceImp.updatePlayer(id, playerRequstBody);
     }
+
 
 
 
